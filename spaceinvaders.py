@@ -166,7 +166,8 @@ while running:
 
     # --- INVADER FIRING ---
     for inv in invaders:
-        if inv.alive and random.random() < inv.fire_chance:
+        REDUCED_CHANCE = inv.fire_chance * 0.62
+        if inv.alive and random.random() < REDUCED_CHANCE:
             invader_bullets.append({"x": inv.x + inv.w//2, "y": inv.y + inv.h})
 
     # --- PLAYER BULLETS HITTING INVADERS ---
