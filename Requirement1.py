@@ -41,7 +41,7 @@ for row in range(ROWS):
     for col in range(COLUMNS):
         # Calculation of the position
         # for each invader in the grid.
-        x = START_X + col * GAP_Y
+        x = START_X + col * GAP_X
         y = START_Y + row * GAP_Y
 
         invader = Invader(x, y, invader_type=1)
@@ -57,8 +57,12 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
-    
+    # drawing invader
     screen.fill((0, 0, 0))
+    
+    for invader in invaders:
+        invader.draw(screen)
+
     pygame.display.flip()
 
 pygame.quit()
