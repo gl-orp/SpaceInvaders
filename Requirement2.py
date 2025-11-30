@@ -48,3 +48,13 @@ for inv in invaders:
 for b in invader_bullets:
     b["y"] += invader_bullet_speed
 invader_bullets = [b for b in invader_bullets if b["y"] < HEIGHT]
+
+
+# --- INVADER BULLETS HIT PLAYER (PLAYER LOSES LIFE) ---
+for b in invader_bullets:
+    if player_x < b["x"] < player_x + player_w and player_y < b["y"] < player_y + player_h:
+        lives -= 1
+        b["y"] = HEIGHT + 9999
+        player_x = WIDTH // 2 - player_w // 2
+        if lives <= 0:
+            running = False
