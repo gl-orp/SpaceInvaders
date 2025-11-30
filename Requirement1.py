@@ -24,6 +24,28 @@ class Invader:
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
+# Creating Invader Grid
+
+invaders = []
+
+ROWS = 5
+COLUMNS = 11
+
+START_X = 50
+START_Y = 50
+GAP_X = 45
+GAP_Y = 40
+
+# Invader grid (rrows * column)
+for row in range(ROWS):
+    for col in range(COLUMNS):
+        # Calculation of the position
+        # for each invader in the grid.
+        x = START_X + col * GAP_Y
+        y = START_Y + row * GAP_Y
+
+        invader = Invader(x, y, invader_type=1)
+        invaders.append(invader)
 
 running = True
 # Event handler
