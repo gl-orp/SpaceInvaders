@@ -44,7 +44,14 @@ for row in range(ROWS):
         x = START_X + col * GAP_X
         y = START_Y + row * GAP_Y
 
-        invader = Invader(x, y, invader_type=1)
+        # invader type based on row number
+        if row == 0:
+            invader_type = 3
+        elif row == 1 or row == 2:
+            invader_type = 2
+        else:
+            invader_type = 1
+        invader = Invader(x, y, invader_type)
         invaders.append(invader)
 
 running = True
