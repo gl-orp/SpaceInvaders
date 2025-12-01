@@ -6,8 +6,9 @@ import sys
 # modules
 pygame.init()
 
-# Pygame window
+# Pygame window and Clock
 screen = pygame.display.set_mode((600, 600))
+clock = pygame.time.Clock()
 pygame.display.set_caption("Space Invaders")
 
 
@@ -18,6 +19,7 @@ class Invader:
         # File path
         image_path = f"images/Invader_{invader_type}.png"
         self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (30, 25))
         # Rect for position
         self.rect = self.image.get_rect(topleft=(x, y))
     
@@ -54,9 +56,14 @@ for row in range(ROWS):
         invader = Invader(x, y, invader_type)
         invaders.append(invader)
 
+# Movemnt
+invader_direction = 1
+invader_speed = 1
+
 running = True
 # Event handler
 while running:
+    clock.tick(60) # Limit FPS==60
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -66,7 +73,23 @@ while running:
                 running = False
     # drawing invader
     screen.fill((0, 0, 0))
+
+    # move invader horizontally
+    for invader in invaders:
+        invader.rect.x += invader_direction * invader_speed
     
+    # checking windows edges
+    hit_edge = False
+    for invader in invaders:
+        if invader.rect.right >= 600 or invader.rect.left <= 0:
+            hit_edge = True
+            break
+    
+    # Reverse detection
+    if hit_edge:
+        invader_direction *= -1
+    
+    # Draw invaders
     for invader in invaders:
         invader.draw(screen)
 
