@@ -1,6 +1,7 @@
 # Importing Required Modules
 import pygame
 import sys
+import random
 
 # Initilaizing pygame
 # modules
@@ -25,6 +26,20 @@ class Invader:
     
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
+# Creatung InvaderLaser
+# class
+class InvaderLaser:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 4, 15)
+        self.color = (159, 51, 52) # Red Orche
+        self.speed = 4
+    
+    def update(self):
+        self.rect.y += self.speed
+    
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
 
 # Creating Invader Grid
 
@@ -56,9 +71,12 @@ for row in range(ROWS):
         invader = Invader(x, y, invader_type)
         invaders.append(invader)
 
+invader_lasers = []
+
 # Movemnt
 invader_direction = 1
 invader_speed = 1
+drop_distance = 5
 
 running = True
 # Event handler
@@ -88,10 +106,33 @@ while running:
     # Reverse detection
     if hit_edge:
         invader_direction *= -1
+        for invader in invaders:
+            invader.rect.y += drop_distance
     
+    # random invader firing
+    if random.randint(1, 50) == 1: # 1 laser/sec
+        shooter = random.choice(invaders)
+        laser_x = shooter.rect.centerx
+        laser_y = shooter.rect.bottom
+        laser = InvaderLaser(laser_x, laser_y)
+        invader_lasers.append(laser)
+    
+    # updating lasers, move downwards   
+    for laser in invader_lasers[:]:
+        laser.update()
+        # Removing laser
+        # when it leaves
+        # screen
+        if laser.rect.top > 600:
+            invader_lasers.remove(laser)
+     
     # Draw invaders
     for invader in invaders:
         invader.draw(screen)
+    
+    # Draw invader lasers
+    for laser in invader_lasers:
+        laser.draw(screen)
 
     pygame.display.flip()
 
