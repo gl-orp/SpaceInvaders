@@ -77,6 +77,9 @@ invader_lasers = []
 invader_direction = 1
 invader_speed = 1
 drop_distance = 5
+# Speed increaments
+standard_speed = 1
+max_speed = 5
 
 running = True
 # Event handler
@@ -89,6 +92,13 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+
+    # How many invaders
+    # are left and setting
+    # speed based on invaders
+    alive_count = len(invaders)
+    invader_speed = standard_speed + (max_speed - standard_speed) * (1 - (alive_count / (ROWS * COLUMNS)))
+
     # drawing invader
     screen.fill((0, 0, 0))
 
