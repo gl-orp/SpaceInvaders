@@ -6,6 +6,10 @@ import random
 # Initilaizing pygame
 # modules
 pygame.init()
+# Requirement 2
+# merge prep
+WIDTH = 600
+HEIGHT = 600
 
 # Pygame window and Clock
 screen = pygame.display.set_mode((600, 600))
@@ -72,7 +76,8 @@ for row in range(ROWS):
         invaders.append(invader)
 
 invader_lasers = []
-# Requirement 2 request
+# Requirement 2
+# merge prep
 player_bullets = []
 cooldown = 0
 
