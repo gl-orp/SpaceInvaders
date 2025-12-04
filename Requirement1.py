@@ -72,6 +72,9 @@ for row in range(ROWS):
         invaders.append(invader)
 
 invader_lasers = []
+# Requirement 2 request
+player_bullets = []
+cooldown = 0
 
 # Movemnt
 invader_direction = 1
