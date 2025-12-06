@@ -148,6 +148,35 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
+# --- REQUIREMENT 2 ---
+
+    # Player movement
+    if player.lives > 0:
+        player.move(keys)
+
+    # Shooting bullets continuously
+    if keys[pygame.K_SPACE] and bullet_cooldown <= 0 and player.lives > 0:
+        bullet = PlayerBullet(player.rect.centerx, player.rect.top)
+        player_bullets.append(bullet)
+        bullet_cooldown = 10  # frames between bullets
+    if bullet_cooldown > 0:
+        bullet_cooldown -= 1
+
+    # Move and update player bullets
+    for bullet in player_bullets[:]:
+        bullet.update()
+        if bullet.rect.bottom < 0:
+            player_bullets.remove(bullet)
+        else:
+            # Check collision with invaders
+            for invader in invaders[:]:
+                if bullet.rect.colliderect(invader.rect):
+                    invaders.remove(invader)
+                    if bullet in player_bullets:
+                        player_bullets.remove(bullet)
+                    break   
+# ------------------------------------------------------------------------
+
     # How many invaders
     # are left and setting
     # speed based on invaders
@@ -202,7 +231,17 @@ while running:
         # screen
         if laser.rect.top > 600:
             invader_lasers.remove(laser)
-     
+        elif player.lives > 0 and laser.rect.colliderect(player.rect) and not player.invincible:
+            player.lives -= 1
+            player.invincible = True
+            player.respawn_timer = pygame.time.get_ticks()
+            invader_lasers.remove(laser)
+            player.rect.midbottom = (WIDTH // 2, HEIGHT - 20)
+
+    # End invincibility after 2 seconds
+    if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
+        player.invincible = False
+
     # Draw invaders
     for invader in invaders:
         # Added for Requirement 2
