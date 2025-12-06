@@ -5,6 +5,6 @@ How to Run:
 
     Ensure you have Pygame installed (pip install pygame).
 
-    Run python game.py from your terminal.
+    Run python mainmerged.py from your terminal.
 
 Enjoy!
