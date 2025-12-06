@@ -3,18 +3,54 @@ import pygame
 import sys
 import random
 
-# Initilaizing pygame
-# modules
+# Intialising pygame modules
 pygame.init()
-# Requirement 2
-# merge prep
+
+# Window settings
 WIDTH = 600
 HEIGHT = 600
-
-# Pygame window and Clock
+# Pygame window and clock
 screen = pygame.display.set_mode((600, 600))
 clock = pygame.time.Clock()
 pygame.display.set_caption("Space Invaders")
+
+
+# --- REQUIREMENT 2 ---
+# Player class
+class Player:
+    def __init__(self):
+        self.image = pygame.image.load("images/Player.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (50, 30))
+        self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT - 20))
+        self.speed = 5
+        self.lives = 3
+        self.respawn_timer = 0
+        self.invincible = False
+
+    def move(self, keys):
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self.speed
+        if keys[pygame.K_RIGHT] and self.rect.right < WIDTH:
+            self.rect.x += self.speed
+
+    def draw(self, surface):
+        if not self.invincible or (pygame.time.get_ticks() // 250) % 2 == 0:  # blink when invincible
+            surface.blit(self.image, self.rect)
+
+
+# --- REQUIREMENT 2 ---
+# --- player bullet class
+class PlayerBullet:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 4, 15)
+        self.color = (0, 255, 0)  # neon green
+        self.speed = 6
+
+    def update(self):
+        self.rect.y -= self.speed
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
 
 
 # Creating Invader Cclass
@@ -86,20 +122,16 @@ for row in range(ROWS):
         invader = Invader(x, y, invader_type)
         invaders.append(invader)
         
-# Game Variables
+# Game variables (merged req1 and req2)
 invader_lasers = []
-# Requirement 2
-# merge prep
-player_bullets = []
-cooldown = 0
-
-# Movemnt
+player_bullets = [] # req2
 invader_direction = 1
-invader_speed = 1
-drop_distance = 5
-# Speed increaments
 standard_speed = 1
 max_speed = 5
+drop_distance = 5
+
+player = Player()   # req2
+bullet_cooldown = 0 # req2
 
 running = True
 # Event handler
