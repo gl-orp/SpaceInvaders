@@ -3,7 +3,7 @@ import pygame
 import sys
 import random
 
-# Intialising pygame modules
+# Initialising pygame modules
 pygame.init()
 
 # Window settings
@@ -38,7 +38,6 @@ class Player:
             surface.blit(self.image, self.rect)
 
 
-# --- REQUIREMENT 2 ---
 # --- Player bullet class
 class PlayerBullet:
     def __init__(self, x, y):
@@ -51,7 +50,7 @@ class PlayerBullet:
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
-
+# ------------------------------------------------------------------------
 
 # Creating Invader Cclass
 class Invader:
@@ -122,7 +121,7 @@ for row in range(ROWS):
         invader = Invader(x, y, invader_type)
         invaders.append(invader)
         
-# Game variables (merged req1 and req2)
+# Game variables (merged req1 and req2 vars)
 invader_lasers = []
 player_bullets = [] # req2
 invader_direction = 1
@@ -231,6 +230,7 @@ while running:
         # screen
         if laser.rect.top > 600:
             invader_lasers.remove(laser)
+# --- REQUIREMENT 2 ---
         elif player.lives > 0 and laser.rect.colliderect(player.rect) and not player.invincible:
             player.lives -= 1
             player.invincible = True
@@ -241,22 +241,23 @@ while running:
     # End invincibility after 2 seconds
     if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
         player.invincible = False
-
+# ------------------------------------------------------------------------
     # Draw all elements
     for invader in invaders:
         invader.draw(screen)
     for bullet in player_bullets:
-        bullet.draw(screen)
+        bullet.draw(screen) # req2
     for laser in invader_lasers:
         laser.draw(screen)
     if player.lives > 0:
-        player.draw(screen)
-
+        player.draw(screen) # req2
+        
+# --- REQUIREMENT 2 ---
     # Display lives
     font = pygame.font.SysFont(None, 30)
     lives_text = font.render(f"Lives: {player.lives}", True, (255, 255, 255))
     screen.blit(lives_text, (10, 10))
-
+# ------------------------------------------------------------------------
     pygame.display.flip()
 
 pygame.quit()
