@@ -15,8 +15,8 @@ clock = pygame.time.Clock()
 pygame.display.set_caption("Space Invaders")
 
 
-# --- REQUIREMENT 2 ---
-# Player class
+# --- REQUIREMENT 2 ------------------------------------------------------
+# player class
 class Player:
     def __init__(self):
         self.image = pygame.image.load("images/Player.png").convert_alpha()
@@ -38,7 +38,7 @@ class Player:
             surface.blit(self.image, self.rect)
 
 
-# --- Player bullet class
+# player bullet class
 class PlayerBullet:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 4, 15)
@@ -147,7 +147,7 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
-# --- REQUIREMENT 2 ---
+# --- REQUIREMENT 2 ------------------------------------------------------
 
     # Player movement
     if player.lives > 0:
@@ -230,7 +230,7 @@ while running:
         # screen
         if laser.rect.top > 600:
             invader_lasers.remove(laser)
-# --- REQUIREMENT 2 ---
+# --- REQUIREMENT 2 ------------------------------------------------------
         elif player.lives > 0 and laser.rect.colliderect(player.rect) and not player.invincible:
             player.lives -= 1
             player.invincible = True
@@ -238,7 +238,7 @@ while running:
             invader_lasers.remove(laser)
             player.rect.midbottom = (WIDTH // 2, HEIGHT - 20)
 
-    # End invincibility after 2 seconds
+    # end invincibility after 2 seconds
     if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
         player.invincible = False
 # ------------------------------------------------------------------------
@@ -252,8 +252,8 @@ while running:
     if player.lives > 0:
         player.draw(screen) # req2
         
-# --- REQUIREMENT 2 ---
-    # Display lives
+# --- REQUIREMENT 2 ------------------------------------------------------
+    # display lives
     font = pygame.font.SysFont(None, 30)
     lives_text = font.render(f"Lives: {player.lives}", True, (255, 255, 255))
     screen.blit(lives_text, (10, 10))
