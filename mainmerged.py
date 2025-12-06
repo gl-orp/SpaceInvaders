@@ -39,7 +39,7 @@ class Player:
 
 
 # --- REQUIREMENT 2 ---
-# --- player bullet class
+# --- Player bullet class
 class PlayerBullet:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 4, 15)
@@ -134,13 +134,16 @@ player = Player()   # req2
 bullet_cooldown = 0 # req2
 
 running = True
-# Event handler
 while running:
     clock.tick(60) # Limit FPS==60
+    screen.fill((0,0,0))
+    keys = pygame.key.get_pressed()
+
+
+    # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
