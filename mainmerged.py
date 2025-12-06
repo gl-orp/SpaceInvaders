@@ -252,6 +252,11 @@ while running:
     if player.lives > 0:
         player.draw(screen)
 
+    # Display lives
+    font = pygame.font.SysFont(None, 30)
+    lives_text = font.render(f"Lives: {player.lives}", True, (255, 255, 255))
+    screen.blit(lives_text, (10, 10))
+
     pygame.display.flip()
 
 pygame.quit()
