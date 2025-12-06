@@ -64,3 +64,9 @@ bullet_cooldown = 0 # req2
         player.respawn_timer = pygame.time.get_ticks()
         invader_lasers.remove(laser)
         player.rect.midbottom = (WIDTH // 2, HEIGHT - 20)
+
+
+# --- REQUIREMENT 2 ---
+# --- end invincibility after being hit for 2 secs
+if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
+    player.invincible = False
