@@ -82,3 +82,10 @@ if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
         laser.draw(screen)
     if player.lives > 0:
         player.draw(screen)       # req 2
+
+
+# --- REQUIREMENT 2 ---
+# --- display player lives
+    font = pygame.font.SysFont(None, 30)
+    lives_text = font.render(f"Lives: {player.lives}", True, (255, 255, 255))
+    screen.blit(lives_text, (10, 10))
