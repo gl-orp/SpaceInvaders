@@ -1,30 +1,25 @@
-
-
 # --- PLAYER CAN SHOOT MULTIPLE BULLETS CONTINUOUSLY ---
 
-player_bullets = []
-bullet_speed = -7
-cooldown = 0
+if keys[pygame.K_SPACE] and bullet_cooldown <= 0 and player.lives > 0:
+    bullet = PlayerBullet(player.rect.centerx, player.rect.top)
+    player_bullets.append(bullet)
+    bullet_cooldown = 10  # fire rate
+if bullet_cooldown > 0:
+    bullet_cooldown -= 1
 
-# Shooting
-if keys[pygame.K_SPACE] and cooldown <= 0:
-    player_bullets.append({"x": player_x + player_w//2, "y": player_y})
-    cooldown = 10
-cooldown = max(cooldown-1, 0)
-
-# Move bullets
-for b in player_bullets:
-    b["y"] += bullet_speed
-player_bullets = [b for b in player_bullets if b["y"] > 0]
+# move bullets + remove off-screen bullets
+for bullet in player_bullets[:]:
+    bullet.update()
+    if bullet.rect.bottom < 0:
+        player_bullets.remove(bullet)
 
 
 # --- PLAYER BULLETS DESTROY INVADERS ---
-
 new_player_bullets = []
 for b in player_bullets:
     hit = False
     for inv in invaders:
-        if inv.alive and inv.rect().collidepoint(b['x'], b['y']):
+        if inv.alive and inv.rect.collidepoint(b['x'], b['y']):
             inv.alive = False
             hit = True
             break
@@ -33,16 +28,14 @@ for b in player_bullets:
 player_bullets = new_player_bullets
 
 
+
 # --- INVADERS SHOOT BULLETS ---
 
-invader_bullets = []
-invader_bullet_speed = 4
+if random.randint(1, 50) == 1:  # roughly 1 laser per sec
+    shooter = random.choice(invaders)
+    laser = InvaderLaser(shooter.rect.centerx, shooter.rect.bottom)
+    invader_lasers.append(laser)
 
-# Invader firing
-for inv in invaders:
-    REDUCED_CHANCE = inv.fire_chance * 0.62
-    if inv.alive and random.random() < REDUCED_CHANCE:
-        invader_bullets.append({"x": inv.x + inv.w//2, "y": inv.y + inv.h})
 
 # Move invader bullets
 for b in invader_bullets:
@@ -51,10 +44,19 @@ invader_bullets = [b for b in invader_bullets if b["y"] < HEIGHT]
 
 
 # --- INVADER BULLETS HIT PLAYER (PLAYER LOSES LIFE) ---
-for b in invader_bullets:
-    if player_x < b["x"] < player_x + player_w and player_y < b["y"] < player_y + player_h:
+for laser in invader_lasers[:]:
+    if player_x < laser.rect.centerx < player_x + player_w and player_y < laser.rect.centery < player_y + player_h:
         lives -= 1
-        b["y"] = HEIGHT + 9999
+        invader_lasers.remove(laser)
         player_x = WIDTH // 2 - player_w // 2
         if lives <= 0:
             running = False
+
+
+# --- DRAW PLAYER ---
+pygame.draw.rect(screen, (0, 255, 0), (player_x, player_y, player_w, player_h))
+
+# --- DRAW PLAYER BULLETS ---
+for b in player_bullets:
+    pygame.draw.rect(screen, (255, 255, 0), (b["x"]-2, b["y"], 4, 10))
+
