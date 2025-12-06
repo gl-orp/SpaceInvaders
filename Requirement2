@@ -70,3 +70,15 @@ bullet_cooldown = 0 # req2
 # --- end invincibility after being hit for 2 secs
 if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
     player.invincible = False
+
+
+    # Draw all elements
+    # (cleaner combined draw of req1 and req2)
+    for invader in invaders:
+        invader.draw(screen)
+    for bullet in player_bullets:
+        bullet.draw(screen)       # req2
+    for laser in invader_lasers:
+        laser.draw(screen)
+    if player.lives > 0:
+        player.draw(screen)       # req 2
