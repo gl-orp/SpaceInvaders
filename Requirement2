@@ -22,3 +22,33 @@ drop_distance = 5
 
 player = Player()   # req2
 bullet_cooldown = 0 # req2
+
+
+# --- REQUIREMENT 2 ---
+# --- continuous shooting logic (add me into main game loop)
+
+# player movement - draws the player only when alive
+    if player.lives > 0:
+        player.move(keys)
+
+    # shooting bullets continuously
+    if keys[pygame.K_SPACE] and bullet_cooldown <= 0 and player.lives > 0:
+        bullet = PlayerBullet(player.rect.centerx, player.rect.top)
+        player_bullets.append(bullet)
+        bullet_cooldown = 10  # frames between bullets
+    if bullet_cooldown > 0:
+        bullet_cooldown -= 1
+
+    # move and update player bullets
+    for bullet in player_bullets[:]:
+        bullet.update()
+        if bullet.rect.bottom < 0:
+            player_bullets.remove(bullet)
+        else:
+            # check collision with invaders
+            for invader in invaders[:]:
+                if bullet.rect.colliderect(invader.rect):
+                    invaders.remove(invader)
+                    if bullet in player_bullets:
+                        player_bullets.remove(bullet)
+                    break
