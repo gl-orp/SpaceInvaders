@@ -52,3 +52,15 @@ bullet_cooldown = 0 # req2
                     if bullet in player_bullets:
                         player_bullets.remove(bullet)
                     break
+
+
+# --- REQUIREMENT 2 ---
+# --- player being hit by laser + respawn + lives (this should go into game loop after updating lasers)
+
+
+    elif player.lives > 0 and laser.rect.colliderect(player.rect) and not player.invincible:
+        player.lives -= 1
+        player.invincible = True
+        player.respawn_timer = pygame.time.get_ticks()
+        invader_lasers.remove(laser)
+        player.rect.midbottom = (WIDTH // 2, HEIGHT - 20)
