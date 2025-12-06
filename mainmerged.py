@@ -242,15 +242,15 @@ while running:
     if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
         player.invincible = False
 
-    # Draw invaders
+    # Draw all elements
     for invader in invaders:
-        # Added for Requirement 2
-        if invader.alive:
-            invader.draw(screen)
-    
-    # Draw invader lasers
+        invader.draw(screen)
+    for bullet in player_bullets:
+        bullet.draw(screen)
     for laser in invader_lasers:
         laser.draw(screen)
+    if player.lives > 0:
+        player.draw(screen)
 
     pygame.display.flip()
 
