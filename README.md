@@ -7,4 +7,6 @@ How to Run:
 
     Run python mainmerged.py from your terminal.
 
+    Use the left and right arrow keys to move, hold the spacebar to shoot, and press Esc to quit.
+
 Enjoy!
