@@ -1,4 +1,26 @@
 # --- REQUIREMENT 2 ---
+# Player class
+class Player:
+    def __init__(self):
+        self.image = pygame.image.load("images/Player.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (50, 30))
+        self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT - 20))
+        self.speed = 5
+        self.lives = 3
+        self.respawn_timer = 0
+        self.invincible = False
+
+    def move(self, keys):
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self.speed
+        if keys[pygame.K_RIGHT] and self.rect.right < WIDTH:
+            self.rect.x += self.speed
+
+    def draw(self, surface):
+        if not self.invincible or (pygame.time.get_ticks() // 250) % 2 == 0:  # blink when invincible
+            surface.blit(self.image, self.rect)
+
+# --- REQUIREMENT 2 ---
 # --- player bullet class
 class PlayerBullet:
     def __init__(self, x, y):
