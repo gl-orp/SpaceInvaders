@@ -35,7 +35,10 @@ class Invader:
         self.y = y
         self.w = 30
         self.h = 25
-    
+        # Requirement 2
+        # compatability
+        self.alive = True
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
@@ -120,12 +123,13 @@ while running:
 
     # move invader horizontally
     for invader in invaders:
-        invader.rect.x += invader_direction * invader_speed
-        # Adding updates for
-        # Requirement 2
-        # compatability.
-        invader.x = invader.rect.x
-        invader.y = invader.rect.y
+        if invader.alive:
+            invader.rect.x += invader_direction * invader_speed
+            # Adding updates for
+            # Requirement 2
+            # compatability.
+            invader.x = invader.rect.x
+            invader.y = invader.rect.y
     
     # checking windows edges
     hit_edge = False
@@ -138,7 +142,13 @@ while running:
     if hit_edge:
         invader_direction *= -1
         for invader in invaders:
-            invader.rect.y += drop_distance
+            # Added for req 2
+            if invader.alive:
+                invader.rect.y += drop_distance
+                invader.x = invader.rect.x
+                invader.y = invader.rect.y
+
+
     
     # random invader firing
     if random.randint(1, 50) == 1: # 1 laser/sec
@@ -159,7 +169,9 @@ while running:
      
     # Draw invaders
     for invader in invaders:
-        invader.draw(screen)
+        # Added for Requirement 2
+        if invader.alive:
+            invader.draw(screen)
     
     # Draw invader lasers
     for laser in invader_lasers:
