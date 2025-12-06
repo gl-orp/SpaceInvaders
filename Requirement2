@@ -1,0 +1,13 @@
+# --- REQUIREMENT 2 ---
+# --- player bullet class
+class PlayerBullet:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 4, 15)
+        self.color = (0, 255, 0)  # neon green
+        self.speed = 6
+
+    def update(self):
+        self.rect.y -= self.speed
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
