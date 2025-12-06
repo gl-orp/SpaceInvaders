@@ -27,6 +27,14 @@ class Invader:
         self.image = pygame.transform.scale(self.image, (30, 25))
         # Rect for position
         self.rect = self.image.get_rect(topleft=(x, y))
+
+        # Adding mirror values
+        # for Requirement 2
+        # compatability.
+        self.x = x
+        self.y = y
+        self.w = 30
+        self.h = 25
     
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -113,6 +121,11 @@ while running:
     # move invader horizontally
     for invader in invaders:
         invader.rect.x += invader_direction * invader_speed
+        # Adding updates for
+        # Requirement 2
+        # compatability.
+        invader.x = invader.rect.x
+        invader.y = invader.rect.y
     
     # checking windows edges
     hit_edge = False
