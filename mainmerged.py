@@ -126,7 +126,7 @@ invader_lasers = []
 player_bullets = [] # req2
 invader_direction = 1
 standard_speed = 1
-max_speed = 5
+max_speed = 8
 drop_distance = 5
 
 player = Player()   # req2
