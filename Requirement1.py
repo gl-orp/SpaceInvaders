@@ -98,7 +98,7 @@ invader_speed = 1
 drop_distance = 5
 # Speed increaments
 standard_speed = 1
-max_speed = 5
+max_speed = 8
 
 running = True
 # Event handler
