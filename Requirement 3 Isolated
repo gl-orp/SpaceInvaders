@@ -1,0 +1,49 @@
+import pygame
+
+# Barrier Class
+class Block(pygame.sprite.Sprite):
+    def __init__(self, x,y):
+        super().__init__()
+        self.image = pygame.Surface((2, 2))
+        self.image.fill((255, 255, 255))
+        self.image = self.image.get_rect(topleft=(x, y))
+
+# Barrier grid layout, 1s represent barrier blocks while 0s represent empty space/ destroyed barrier
+barrier_grid = [
+    [0 ,0 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,]
+        [0 ,0 ,1 ,1 ,1 ,1 ,1 ,0 ,0]
+        [0 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,0 ,]
+        [1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1,]
+        [1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1,]
+        [1 ,1 ,1 ,1 ,1 ,1 ,0 ,1 ,1,]
+        [1 ,1 ,1 ,0 ,0 ,0 ,1 ,1 ,1,]
+        [1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1,]
+        [1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1]
+        [0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0]
+    ]
+
+class Barrier:
+    # Allows for creation of barrier blocks wherever needed
+    def __init__(self,x , y):
+        self.blocks_group = pygame.sprite.Group()
+        for row in range(len(barrier_grid)):
+            for column in range(len(grid[0])):
+                if barrier_grid[row][column] == 1:
+                    pos_x = x + column * 3 # Adjust starting x position
+                    pos_y = y + row * 3     # Adjust starting y position
+                    block = Block(pos_x, pos_y)
+                    self.blocks_group.add(block)
+
+# Bullet collision code
+if bullet in player_bullets:
+    for barrier in barriers:
+        hit_blocks = pygame.sprite.spritecollide(bullet, barrier.blocks_group, True)
+        if hit_blocks:
+            player_bullets.remove(bullet)
+            break
+
+# Create 4 barriers at different positions
+barriers = []
+barrier_positions = [(100, 400), (220, 400), (340, 400), (460, 400)]
+for x, y in barrier_positions:
+    barriers.append(Barrier(x, y))
