@@ -171,6 +171,7 @@ def create_barriers():
     positions = [(100, 400), (220, 400), (340, 400), (460, 400)] # X, Y positions for each barrier
     return [Barrier(x, y) for x, y in positions]
 
+#calls the draw barrier function
 barriers = create_barriers()
 
 # --- Requirement 1 --------------------------------------------------------------
