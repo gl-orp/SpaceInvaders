@@ -1,38 +1,50 @@
 import pygame
 
-# Barrier Class
+# --- REQUIREMENT 3: Barriers -------------------------------------------
+# Block Class, represents the individual squares that make up the barrier
 class Block(pygame.sprite.Sprite):
-    def __init__(self, x,y):
+    def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((2, 2))
-        self.image.fill((255, 255, 255))
-        self.image = self.image.get_rect(topleft=(x, y))
+        self.image = pygame.Surface((3, 3)) # The size of each individual block
+        self.image.fill((255, 255, 255)) # The colour of each block
+        self.rect = self.image.get_rect(topleft=(x, y)) # The position of each block
 
-# Barrier grid layout, 1s represent barrier blocks while 0s represent empty space/ destroyed barrier
+# Barrier grid layout, 1s represent active barrier blocks while 0's represent empty space/destroyed barrier blocks
 barrier_grid = [
-    [0 ,0 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,]
-        [0 ,0 ,1 ,1 ,1 ,1 ,1 ,0 ,0]
-        [0 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,0 ,]
-        [1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1,]
-        [1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1,]
-        [1 ,1 ,1 ,1 ,1 ,1 ,0 ,1 ,1,]
-        [1 ,1 ,1 ,0 ,0 ,0 ,1 ,1 ,1,]
-        [1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1,]
-        [1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1]
-        [0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0]
-    ]
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
+# Barrier Class which groups together multiple Block classes to form a complete barrier
 class Barrier:
-    # Allows for creation of barrier blocks wherever needed
-    def __init__(self,x , y):
+    def __init__(self, x, y): # Positional arguments to spawn decide barrier locations
         self.blocks_group = pygame.sprite.Group()
-        for row in range(len(barrier_grid)):
-            for column in range(len(grid[0])):
+        # Assigns blocks based on the barrier grid layout above
+        for row in range(len(barrier_grid)): # assigns blocks based on grid columns and rows
+            for column in range(len(barrier_grid[0])):
                 if barrier_grid[row][column] == 1:
-                    pos_x = x + column * 3 # Adjust starting x position
-                    pos_y = y + row * 3     # Adjust starting y position
+                    pos_x = x + column * 3
+                    pos_y = y + row * 3
                     block = Block(pos_x, pos_y)
                     self.blocks_group.add(block)
+
+# Function to create the four barrier classes at specified positions for an equal spread
+def create_barriers():
+    positions = [(100, 400), (220, 400), (340, 400), (460, 400)] # X, Y positions for each barrier
+    return [Barrier(x, y) for x, y in positions]
+
+# Draws the four barriers
+barriers = create_barriers()
 
 # Bullet collision code
 if bullet in player_bullets:
