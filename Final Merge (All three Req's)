@@ -133,9 +133,9 @@ bullet_cooldown = 0 # req2
 class Block(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((3, 3))
-        self.image.fill((255, 255, 255))
-        self.rect = self.image.get_rect(topleft=(x, y))
+        self.image = pygame.Surface((3, 3)) # The size of each individual block
+        self.image.fill((0, 255, 0)) # The colour of each block
+        self.rect = self.image.get_rect(topleft=(x, y)) # The position of each block
 
 # Barrier grid layout, 1s represent active barrier blocks while 0's represent empty space/destroyed barrier blocks
 barrier_grid = [
