@@ -1,0 +1,335 @@
+# Importing Required Modules
+import pygame
+import sys
+import random
+
+# Initialising pygame modules
+pygame.init()
+
+# Window settings
+WIDTH = 600
+HEIGHT = 600
+# Pygame window and clock
+screen = pygame.display.set_mode((600, 600))
+clock = pygame.time.Clock()
+pygame.display.set_caption("Space Invaders")
+
+
+# --- REQUIREMENT 2 ------------------------------------------------------
+# player class
+class Player:
+    def __init__(self):
+        self.image = pygame.image.load("images/Player.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (50, 30))
+        self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT - 20))
+        self.speed = 5
+        self.lives = 3
+        self.respawn_timer = 0
+        self.invincible = False
+
+    def move(self, keys):
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self.speed
+        if keys[pygame.K_RIGHT] and self.rect.right < WIDTH:
+            self.rect.x += self.speed
+
+    def draw(self, surface):
+        if not self.invincible or (pygame.time.get_ticks() // 250) % 2 == 0:  # blink when invincible
+            surface.blit(self.image, self.rect)
+
+
+# player bullet class
+class PlayerBullet:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 4, 15)
+        self.color = (0, 255, 0)  # neon green
+        self.speed = 6
+
+    def update(self):
+        self.rect.y -= self.speed
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+# ------------------------------------------------------------------------
+
+# Creating Invader Cclass
+class Invader:
+    def __init__(self, x, y, invader_type):
+        self.type = invader_type
+        # File path
+        image_path = f"images/Invader_{invader_type}.png"
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (30, 25))
+        # Rect for position
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+        # Adding mirror valuesfor Requirement 2compatability.
+        self.x = x
+        self.y = y
+        self.w = 30
+        self.h = 25
+        # Requirement 2 compatability
+        self.alive = True
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+# Creatung InvaderLaser class
+class InvaderLaser:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 4, 15)
+        self.color = (159, 51, 52) # Red Orche
+        self.speed = 4
+    
+    def update(self):
+        self.rect.y += self.speed
+    
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+
+# Creating Invader Grid
+
+invaders = []
+
+ROWS = 5
+COLUMNS = 11
+
+START_X = 50
+START_Y = 50
+GAP_X = 45
+GAP_Y = 40
+
+# Invader grid (rows * columns)
+for row in range(ROWS):
+    for col in range(COLUMNS):
+        # Calculation of the position
+        # for each invader in the grid.
+        x = START_X + col * GAP_X
+        y = START_Y + row * GAP_Y
+
+        # invader type based on row number
+        if row == 0:
+            invader_type = 3
+        elif row == 1 or row == 2:
+            invader_type = 2
+        else:
+            invader_type = 1
+        invader = Invader(x, y, invader_type)
+        invaders.append(invader)
+        
+# Game variables (merged req1 and req2 vars)
+invader_lasers = []
+player_bullets = [] # req2
+invader_direction = 1
+standard_speed = 1
+max_speed = 8
+drop_distance = 5
+
+player = Player()   # req2
+bullet_cooldown = 0 # req2
+
+# --- REQUIREMENT 3: Barriers -------------------------------------------
+# Block Class, represents the individual squares that make up the barrier
+class Block(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface((3, 3))
+        self.image.fill((255, 255, 255))
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+# Barrier grid layout, 1s represent active barrier blocks while 0's represent empty space/destroyed barrier blocks
+barrier_grid = [
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
+
+# Barrier Class which groups together multiple Block classes to form a complete barrier
+class Barrier:
+    def __init__(self, x, y): # Positional arguments to spawn decide barrier locations
+        self.blocks_group = pygame.sprite.Group()
+        # Assigns blocks based on the barrier grid layout above
+        for row in range(len(barrier_grid)): # assigns blocks based on grid columns and rows
+            for column in range(len(barrier_grid[0])):
+                if barrier_grid[row][column] == 1:
+                    pos_x = x + column * 3
+                    pos_y = y + row * 3
+                    block = Block(pos_x, pos_y)
+                    self.blocks_group.add(block)
+
+# Function to create the four barrier classes at specified positions for an equal spread
+def create_barriers():
+    positions = [(100, 400), (220, 400), (340, 400), (460, 400)] # X, Y positions for each barrier
+    return [Barrier(x, y) for x, y in positions]
+
+barriers = create_barriers()
+
+# --- Requirement 1 --------------------------------------------------------------
+running = True
+while running:
+    clock.tick(60) # Limit FPS==60
+    screen.fill((0,0,0))
+    keys = pygame.key.get_pressed()
+
+
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+
+# --- REQUIREMENT 2 ------------------------------------------------------
+
+    # Player movement
+    if player.lives > 0:
+        player.move(keys)
+
+    # Shooting bullets continuously
+    if keys[pygame.K_SPACE] and bullet_cooldown <= 0 and player.lives > 0:
+        bullet = PlayerBullet(player.rect.centerx, player.rect.top)
+        player_bullets.append(bullet)
+        bullet_cooldown = 10  # frames between bullets
+    if bullet_cooldown > 0:
+        bullet_cooldown -= 1
+
+    # Move and update player bullets
+    for bullet in player_bullets[:]:
+        bullet.update()
+        if bullet.rect.bottom < 0:
+            player_bullets.remove(bullet)
+        else:
+            # Check collision with invaders
+            hit_inavder = False
+            for invader in invaders[:]:
+                if bullet.rect.colliderect(invader.rect):
+                    invaders.remove(invader)
+                    if bullet in player_bullets:
+                        player_bullets.remove(bullet)
+                    hit_inavder = True
+                    break
+            # If bullet didn't hit an invader, check barriers
+            if not hit_inavder:
+                for barrier in barriers:
+                    for block in list(barrier.blocks_group):
+                        if bullet.rect.colliderect(block.rect):
+                            # remove the barrier block and contacted bulletif hit
+                            barrier.blocks_group.remove(block)
+                            if bullet in player_bullets:
+                                player_bullets.remove(bullet)
+                            hit_inavder = True
+                            break
+                    if hit_inavder:
+                        break
+# ------------------------------------------------------------------------
+
+    # How many invaders
+    # are left and setting
+    # speed based on invaders
+    alive_count = len(invaders)
+    invader_speed = standard_speed + (max_speed - standard_speed) * (1 - (alive_count / (ROWS * COLUMNS)))
+
+    # drawing invader
+    screen.fill((0, 0, 0))
+
+    # move invader horizontally
+    for invader in invaders:
+        if invader.alive:
+            invader.rect.x += invader_direction * invader_speed
+            # Adding updates for
+            # Requirement 2
+            # compatability.
+            invader.x = invader.rect.x
+            invader.y = invader.rect.y
+    
+    # checking windows edges
+    hit_edge = False
+    for invader in invaders:
+        if invader.rect.right >= 600 or invader.rect.left <= 0:
+            hit_edge = True
+            break
+    
+    # Reverse detection
+    if hit_edge:
+        invader_direction *= -1
+        for invader in invaders:
+            # Added for req 2
+            if invader.alive:
+                invader.rect.y += drop_distance
+                invader.x = invader.rect.x
+                invader.y = invader.rect.y
+    
+    # random invader firing
+    if random.randint(1, 50) == 1: # 1 laser/sec
+        shooter = random.choice(invaders)
+        laser_x = shooter.rect.centerx
+        laser_y = shooter.rect.bottom
+        laser = InvaderLaser(laser_x, laser_y)
+        invader_lasers.append(laser)
+    
+    # updating lasers, move downwards   
+    for laser in invader_lasers[:]:
+        laser.update()
+        # Checks for barrier block collision to break block if hit
+        hit_block = False
+        for barrier in barriers:
+            for block in list(barrier.blocks_group):
+                if laser.rect.colliderect(block.rect):
+                    barrier.blocks_group.remove(block)
+                    if laser in invader_lasers:
+                        invader_lasers.remove(laser)
+                    hit_block = True
+                    break
+            if hit_block:
+                break
+        if hit_block:
+            continue
+        # Removing laser when it leaves screen
+        if laser.rect.top > 600:
+            invader_lasers.remove(laser)
+# --- REQUIREMENT 2 ------------------------------------------------------
+        elif player.lives > 0 and laser.rect.colliderect(player.rect) and not player.invincible:
+            player.lives -= 1
+            player.invincible = True
+            player.respawn_timer = pygame.time.get_ticks()
+            invader_lasers.remove(laser)
+            player.rect.midbottom = (WIDTH // 2, HEIGHT - 20)
+
+    # end invincibility after 2 seconds
+    if player.invincible and pygame.time.get_ticks() - player.respawn_timer > 2000:
+        player.invincible = False
+
+# ------------------------------------------------------------------------
+    # Draw all elements
+    for invader in invaders:
+        invader.draw(screen)
+    # Draws the four barriers
+    for barrier in barriers:
+        barrier.blocks_group.draw(screen) # req3
+    for bullet in player_bullets:
+        bullet.draw(screen) # req2
+    for laser in invader_lasers:
+        laser.draw(screen)
+    if player.lives > 0:
+        player.draw(screen) # req2
+        
+# --- REQUIREMENT 2 ------------------------------------------------------
+    # display lives
+    font = pygame.font.SysFont(None, 30)
+    lives_text = font.render(f"Lives: {player.lives}", True, (255, 255, 255))
+    screen.blit(lives_text, (10, 10))
+# ------------------------------------------------------------------------
+    pygame.display.flip()
+
+pygame.quit()
+sys.exit()
